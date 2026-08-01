@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Histórico de Conversas · Yalla</title>
+<style>
+:root{--bg:#0b141a;--panel:#111b21;--panel2:#202c33;--in:#202c33;--out:#005c4b;--txt:#e9edef;--txt2:#8696a0;--accent:#00a884;--border:#2a3942;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--txt);height:100vh;overflow:hidden}
+#gate{position:fixed;inset:0;background:var(--bg);z-index:10;display:flex;align-items:center;justify-content:center}
+#gate .box{background:var(--panel2);padding:32px;border-radius:14px;width:320px;max-width:90%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+#gate h2{font-size:18px;margin-bottom:6px}#gate p{font-size:13px;color:var(--txt2);margin-bottom:18px}
+#gate input{width:100%;padding:11px 14px;border-radius:8px;border:none;background:var(--panel);color:var(--txt);font-size:15px;outline:none;margin-bottom:12px}
+#gate button{width:100%;padding:11px;border-radius:8px;border:none;background:var(--accent);color:#04231c;font-size:15px;font-weight:600;cursor:pointer}
+#gate .err{color:#f87171;font-size:13px;height:16px;margin-top:8px}
+.app{display:flex;height:100vh}
+.sidebar{width:380px;min-width:300px;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column}
+.sbhead{padding:14px 16px;background:var(--panel2);display:flex;align-items:center;gap:10px}
+.sbhead h1{font-size:16px;font-weight:600}.sbhead .count{font-size:12px;color:var(--txt2);margin-left:auto}
+.search{padding:8px 12px;background:var(--panel)}
+.search input{width:100%;padding:9px 14px;border-radius:8px;border:none;background:var(--panel2);color:var(--txt);font-size:14px;outline:none}
+.list{flex:1;overflow-y:auto}
+.item{padding:11px 16px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;flex-direction:column;gap:3px}
+.item:hover,.item.active{background:var(--panel2)}
+.item .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.item .nome{font-size:15px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .data{font-size:11px;color:var(--txt2);white-space:nowrap}
+.item .prev{font-size:13px;color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .meta{font-size:11px;color:var(--txt2)}
+.chat{flex:1;display:flex;flex-direction:column;background:#0b141a}
+.chathead{padding:12px 20px;background:var(--panel2);border-bottom:1px solid var(--border);min-height:60px;display:flex;flex-direction:column;justify-content:center}
+.chathead .nome{font-size:16px;font-weight:600}.chathead .sub{font-size:12px;color:var(--txt2)}
+.msgs{flex:1;overflow-y:auto;padding:20px 8%;display:flex;flex-direction:column;gap:6px}
+.empty{margin:auto;color:var(--txt2);text-align:center}
+.bubble{max-width:65%;padding:7px 11px 8px;border-radius:8px;font-size:14px;line-height:1.4;word-wrap:break-word;white-space:pre-wrap}
+.bubble.customer{align-self:flex-start;background:var(--in);border-top-left-radius:2px}
+.bubble.operator{align-self:flex-end;background:var(--out);border-top-right-radius:2px}
+.bubble .at{font-size:12px;font-weight:600;color:var(--accent);margin-bottom:2px}
+.bubble .ts{font-size:10px;color:var(--txt2);text-align:right;margin-top:3px}
+.sys{align-self:center;background:#182229;color:var(--txt2);font-size:12px;padding:5px 12px;border-radius:6px;margin:4px 0}
+.loader{margin:auto;color:var(--txt2)}
+.back{display:none;background:none;border:none;color:var(--txt);font-size:22px;cursor:pointer;margin-right:6px}
+@media(max-width:720px){.sidebar{width:100%;position:absolute;z-index:2;height:100%}.sidebar.hide{display:none}.chat{width:100%}.back{display:inline-block}}
+</style>
+</head>
+<body>
+<div id="gate"><div class="box">
+  <h2>🔒 Conversas Yalla</h2><p>Acesso restrito. Informe a senha.</p>
+  <input type="password" id="pw" placeholder="Senha" autocomplete="off">
+  <button onclick="tryLogin()">Entrar</button><div class="err" id="err"></div>
+</div></div>
+<div class="app" id="app" style="display:none">
+  <div class="sidebar" id="sidebar">
+    <div class="sbhead"><h1>💬 Conversas Yalla</h1><span class="count" id="count">…</span></div>
+    <div class="search"><input id="q" placeholder="Buscar por nome ou telefone…" autocomplete="off"></div>
+    <div class="list" id="list"><div class="loader" style="padding:20px">Carregando…</div></div>
+  </div>
+  <div class="chat">
+    <div class="chathead" id="chathead"><span class="nome">Selecione uma conversa</span></div>
+    <div class="msgs" id="msgs"><div class="empty">👈 Escolha um contato à esquerda<br><small>para ver o histórico</small></div></div>
+  </div>
+</div>
+<script>
+const SENHA="Yalla@2027";
+function tryLogin(){const v=document.getElementById('pw').value;
+  if(v===SENHA){sessionStorage.setItem('ok','1');document.getElementById('gate').style.display='none';document.getElementById('app').style.display='flex';boot();}
+  else{document.getElementById('err').textContent='Senha incorreta';}}
+document.getElementById('pw').addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin()});
+if(sessionStorage.getItem('ok')==='1'){document.getElementById('gate').style.display='none';document.getElementById('app').style.display='flex';window.addEventListener('DOMContentLoaded',boot);}
+
+let INDEX=[],filtered=[],activeId=null,booted=false,shardCache={};
+let listEl,qEl,msgsEl,headEl,countEl,sidebar;
+function boot(){if(booted)return;booted=true;
+  listEl=document.getElementById('list');qEl=document.getElementById('q');msgsEl=document.getElementById('msgs');
+  headEl=document.getElementById('chathead');countEl=document.getElementById('count');sidebar=document.getElementById('sidebar');
+  fetch('index.json').then(r=>r.json()).then(d=>{INDEX=d;filtered=d;countEl.textContent=d.length.toLocaleString('pt-BR')+' contatos';render();})
+    .catch(e=>{listEl.innerHTML='<div style="padding:20px;color:#f88">Erro ao carregar index.json<br><small>'+e+'</small></div>'});
+  qEl.oninput=()=>{const t=qEl.value.toLowerCase().trim();
+    filtered=t?INDEX.filter(c=>c.nome.toLowerCase().includes(t)||(c.tel||'').includes(t)):INDEX;render();};}
+function render(){const slice=filtered.slice(0,300);
+  listEl.innerHTML=slice.map(c=>`<div class="item ${c.id===activeId?'active':''}" onclick="open_('${c.id}',${c.s})">
+    <div class="top"><span class="nome">${esc(c.nome)}</span><span class="data">${c.ult}</span></div>
+    <div class="prev">${esc(c.prev)}</div><div class="meta">${c.tel?fmtTel(c.tel):''} · ${c.n} msgs</div></div>`).join('')
+    ||'<div style="padding:20px;color:#8696a0">Nada encontrado</div>';
+  if(filtered.length>300)listEl.innerHTML+='<div style="padding:14px;text-align:center;color:#8696a0;font-size:12px">Mostrando 300 de '+filtered.length.toLocaleString('pt-BR')+'. Refine a busca.</div>';}
+async function getShard(s){if(shardCache[s])return shardCache[s];
+  const r=await fetch('data/shard'+s+'.json');const d=await r.json();shardCache[s]=d;return d;}
+async function open_(id,s){activeId=id;render();
+  if(window.innerWidth<=720)sidebar.classList.add('hide');
+  const c=INDEX.find(x=>x.id===id);
+  headEl.innerHTML=`<span class="nome"><button class="back" onclick="sidebar.classList.remove('hide')">‹</button>${esc(c.nome)}</span><span class="sub">${c.tel?fmtTel(c.tel):'sem telefone'} · ${c.n} mensagens</span>`;
+  msgsEl.innerHTML='<div class="loader">Carregando conversa…</div>';
+  try{const shard=await getShard(s);const ms=shard[id]||[];
+    msgsEl.innerHTML=ms.map(m=>{const t=m.t;
+      if(m.d==='o'&&(t.includes('Atendimento iniciado')||t.includes('Atendimento finalizado')||t.startsWith('>:')))
+        return `<div class="sys">${esc(t.replace('>:','').trim())}</div>`;
+      const cls=m.d==='c'?'customer':'operator';
+      return `<div class="bubble ${cls}">${m.a?`<div class="at">${esc(m.a)}</div>`:''}${esc(t)}<div class="ts">${m.ts}</div></div>`;
+    }).join('');msgsEl.scrollTop=0;
+  }catch(e){msgsEl.innerHTML='<div class="empty">Erro ao carregar conversa</div>';}}
+function esc(s){return(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function fmtTel(t){t=(t||'').replace(/\D/g,'');if(t.length===13)return `+${t.slice(0,2)} (${t.slice(2,4)}) ${t.slice(4,9)}-${t.slice(9)}`;return t}
+</script>
+</body>
+</html>
