@@ -6,18 +6,21 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Conversas · Yalla</title>
 <style>
-:root{--bg:#0b141a;--panel:#111b21;--panel2:#202c33;--in:#202c33;--out:#005c4b;--txt:#e9edef;--txt2:#8696a0;--accent:#00a884;--border:#2a3942;}
+:root{--bg:#0b141a;--panel:#0f1b2d;--panel2:#002A69;--in:#1a2942;--out:#0a5c4b;--txt:#e9edef;--txt2:#8fa3bf;--accent:#FFC21B;--navy:#002A69;--border:#1c3050;}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--txt);height:100vh;overflow:hidden}
-#gate{position:fixed;inset:0;background:var(--bg);z-index:10;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;text-align:center;padding:20px}
-#gate h2{font-size:18px;color:var(--txt2);font-weight:500}
-#gate p{font-size:13px;color:var(--txt2);max-width:340px}
+#gate{position:fixed;inset:0;background:linear-gradient(135deg,#002A69,#001a40);z-index:10;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;text-align:center;padding:20px}
+#gate img{width:150px;height:auto;margin-bottom:6px}
+#gate h2{font-size:18px;color:#fff;font-weight:600}
+#gate p{font-size:13px;color:#b9c7de;max-width:340px}
 .app{display:flex;height:100vh}
 .sidebar{width:380px;min-width:300px;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column}
-.sbhead{padding:14px 16px;background:var(--panel2);display:flex;align-items:center;gap:10px}
-.sbhead h1{font-size:16px;font-weight:600}.sbhead .count{font-size:12px;color:var(--txt2);margin-left:auto}
+.sbhead{padding:12px 16px;background:var(--navy);display:flex;align-items:center;gap:10px}
+.sbhead img{height:26px;width:auto}
+.sbhead .count{font-size:12px;color:#b9c7de;margin-left:auto}
 .search{padding:8px 12px;background:var(--panel)}
 .search input{width:100%;padding:9px 14px;border-radius:8px;border:none;background:var(--panel2);color:var(--txt);font-size:14px;outline:none}
+.search input::placeholder{color:#8fa3bf}
 .list{flex:1;overflow-y:auto}
 .item{padding:11px 16px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;flex-direction:column;gap:3px}
 .item:hover,.item.active{background:var(--panel2)}
@@ -27,26 +30,30 @@ body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;backgr
 .item .prev{font-size:13px;color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .item .meta{font-size:11px;color:var(--txt2)}
 .chat{flex:1;display:flex;flex-direction:column;background:#0b141a}
-.chathead{padding:12px 20px;background:var(--panel2);border-bottom:1px solid var(--border);min-height:60px;display:flex;flex-direction:column;justify-content:center}
-.chathead .nome{font-size:16px;font-weight:600}.chathead .sub{font-size:12px;color:var(--txt2)}
+.chathead{padding:12px 20px;background:var(--navy);border-bottom:1px solid var(--border);min-height:60px;display:flex;flex-direction:column;justify-content:center}
+.chathead .nome{font-size:16px;font-weight:600}.chathead .sub{font-size:12px;color:#b9c7de}
 .msgs{flex:1;overflow-y:auto;padding:20px 8%;display:flex;flex-direction:column;gap:6px}
 .empty{margin:auto;color:var(--txt2);text-align:center}
 .bubble{max-width:65%;padding:7px 11px 8px;border-radius:8px;font-size:14px;line-height:1.4;word-wrap:break-word;white-space:pre-wrap}
 .bubble.customer{align-self:flex-start;background:var(--in);border-top-left-radius:2px}
 .bubble.operator{align-self:flex-end;background:var(--out);border-top-right-radius:2px}
 .bubble .at{font-size:12px;font-weight:600;color:var(--accent);margin-bottom:2px}
-.bubble .ts{font-size:10px;color:var(--txt2);text-align:right;margin-top:3px}
-.sys{align-self:center;background:#182229;color:var(--txt2);font-size:12px;padding:5px 12px;border-radius:6px;margin:4px 0}
+.bubble .ts{font-size:10px;color:#b9c7de;text-align:right;margin-top:3px}
+.sys{align-self:center;background:#0f1b2d;color:var(--txt2);font-size:12px;padding:5px 12px;border-radius:6px;margin:4px 0}
 .loader{margin:auto;color:var(--txt2)}
-.back{display:none;background:none;border:none;color:var(--txt);font-size:22px;cursor:pointer;margin-right:6px}
+.back{display:none;background:none;border:none;color:#fff;font-size:22px;cursor:pointer;margin-right:6px}
 @media(max-width:720px){.sidebar{width:100%;position:absolute;z-index:2;height:100%}.sidebar.hide{display:none}.chat{width:100%}.back{display:inline-block}}
 </style>
 </head>
 <body>
-<div id="gate"><h2>🔒 Acesso restrito</h2><p id="gatemsg">Esta página requer um link de acesso válido.</p></div>
+<div id="gate">
+  <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMQAAABXCAYAAABbVOqGAAAGA0lEQVR42u2du1IqSxSG210mh3TMdlFwkiHVEBOw6oS8A/gKpicAAlPjnQmvcIrQKmUHEhpDIhYpk2LoCSwoZPdlpruHufh9qc4wl/57/Wv1ZU4+fv/8EAAghBDiB48AAEEAIAgABAGAIAAQBACCAEAQAAgCAEEAIAiArDgt8sU/Lc6sj60HG1EPNrQAKI8ghpPQWhT1YCNebx9oAVAey9QKI+tjl1GFtw/lEkSvuRLtcC2EEKLfmYvHm2fjMffdF946KDkp03qIZVQRf//7T+z///j1Hy0A8hkhllHFKUkGKE1SPZpVxfX4YpfsPt48e60Abc9F3gC5jxBPi7OdGLaN9uru0utvPN48i9fbB9HvzHfi2OYeALnJIXSevx2uYyXJpvMdlle3UYIxCMhdhLgen8eOHD7tE2KA3AliNKsak+jRrCoGk4ZzFALItSCWUSV27z+cNBAFlFsQOqskYxwjmugaPoKA3ApiMGkkHm/4jCjnNGwolyCWUUUMLe2PSzl2Gf3Fm4b8CSKpVXLJPbBMkGtB2FglGT4qTwCZCsLFKsnwUXkCkHGUuUyuVknGeFYV7TCKNQXjzWCZBpOG8n9qwUYMOnNltJoqop7uONOxJvbPrbv27t70+CQRWHVdrXAtes2Vh/ZgP+Bqc0+5EsQoZsnULp84jzURME5SPZpVlX/rNVfS3xhOGsr8pG8Qg0uj2G8Q00WgfL61YJO48UwXZ8Zn4cLV3aVTe7C5p1xZpjSmX+yLwsdEwMHepD8ZT4tA+tu6ZF3VcK7HF6k+kzzjKobC5xDHePFxKk9xqkxtzXJUmYXQ9aKq+VLX4wvtcYih5II41sv3UXlqacLwaFb9IipTkaAriQ5Xd5ffUgzbKF6UxV+pCeLYtmA4aYjhJLSOEKo8QWabTA37MJn2VXIuIsOC3XtqSbXMd6eN64Nvh5EYzSpK27TNC6aae0s6tbwdrkU9eJc+vzIMKOoKGnm891QEcWgxikK3uVL2/qNZdVc50gmvm7AK0wojaXl2MGl4HbvJI/3OQloxurq7LJcgitqzffZYG+X1x+m5dGMP8E1ziGkGdsmUHySJEur7OhNjQ3UJEIR3L++bVoKBHF351WQFux5GcaGEgsifFYoS/O/auqfHLiGI3GMqp8qTvbmF6NjWBkEUAJvGbSMil42XAUEchfvui7X9aSds4NilcnBa1htrO05VboXr2FMt+o5ikCXqb99klZ/s3rMs26ciiNfbh0w3BrDZ9U9mm3TTu/dxKbcOv8EAnArfW5bm1jLVU56zbuqtXcWQxDbVg42XRTNADuFdhK+3D169fJxxBcYeyCFyRb8z/1IV2i6B9PGlINNUDpvkGxCElPvui7Ex7TdE2QcWe83VLiKMZtXdDn8+p1DoZsBmaQ2hRIKI67v3G/Y4+LPi0wrXu+R9Xyw+BaGrNGGXEIQ3m3P4LQebz+TWg3fxJFlk72uQzFRh8mGX2uFaer26zQPKQq+5EjVJ5zXOcPnAaVYP4nDJp00t/9Pfp7dNpWndtA+7pFsPUXZBqLaUmWa4QOhHFmI4XJNsW7pUWSNfiW7SddNQfI4uiH5n/kfPa9O40k5mTb0z1SVyCC/R4bDnrRt2uNPlD2mK5cmwbroI1aW3mJ86TvKZMd/n+9aCkK1ZtrUeNcUD9/UiymCXRrNqrPlYcT+DHPd8990X0WsWUxBHs0yqXtV22kOaPZBpjyemapBDeBHEMUKrj/PpZpryFVME4amhvnvt2VVJresYxDKqMBiHILLBRRxp9dImj4xdQhBeqB3JZriWQ0278mGXyk2ms111pVN9o0+v5OlrLcWXJL0zT1xajnuM7+u97754mSnscn1pvINCJNW2USPtMQjAMpUC7AwURhA+pzq0iAJQxgiRxzEIQBCZNX7bpFp1nO35ADKLED4arSoS1IgQUARB1D1PxKunPLEPEEShBJFm9AEEUQibtEU3zsAYBLhy8vH750daJ99uCeMjEmzX2GKLoLCCAMAyASAIAAQBgCAAEAQAggBAEAAIAgAQBACCAEAQAAgCIDn/AyJD2Hd83vIbAAAAAElFTkSuQmCC" alt="Yalla">
+  <h2>🔒 Acesso restrito</h2>
+  <p id="gatemsg">Esta página requer um link de acesso válido.</p>
+</div>
 <div class="app" id="app" style="display:none">
   <div class="sidebar" id="sidebar">
-    <div class="sbhead"><h1>💬 Conversas Yalla</h1><span class="count" id="count">…</span></div>
+    <div class="sbhead"><img src="data:image/png;base64,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" alt="Yalla"><span class="count" id="count">…</span></div>
     <div class="search"><input id="q" placeholder="Buscar por nome ou telefone…" autocomplete="off"></div>
     <div class="list" id="list"><div class="loader" style="padding:20px">Carregando…</div></div>
   </div>
@@ -59,7 +66,6 @@ body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;backgr
 const CHAVE="Er858uSLh1IG";
 const hash=location.hash.replace(/^#/,'');
 if(hash!==CHAVE){
-  // acesso negado: não carrega nada
 } else {
   document.getElementById('gate').style.display='none';
   document.getElementById('app').style.display='flex';
