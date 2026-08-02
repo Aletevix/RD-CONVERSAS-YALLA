@@ -4,17 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Histórico de Conversas · Yalla</title>
+<title>Conversas · Yalla</title>
 <style>
 :root{--bg:#0b141a;--panel:#111b21;--panel2:#202c33;--in:#202c33;--out:#005c4b;--txt:#e9edef;--txt2:#8696a0;--accent:#00a884;--border:#2a3942;}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--txt);height:100vh;overflow:hidden}
-#gate{position:fixed;inset:0;background:var(--bg);z-index:10;display:flex;align-items:center;justify-content:center}
-#gate .box{background:var(--panel2);padding:32px;border-radius:14px;width:320px;max-width:90%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.4)}
-#gate h2{font-size:18px;margin-bottom:6px}#gate p{font-size:13px;color:var(--txt2);margin-bottom:18px}
-#gate input{width:100%;padding:11px 14px;border-radius:8px;border:none;background:var(--panel);color:var(--txt);font-size:15px;outline:none;margin-bottom:12px}
-#gate button{width:100%;padding:11px;border-radius:8px;border:none;background:var(--accent);color:#04231c;font-size:15px;font-weight:600;cursor:pointer}
-#gate .err{color:#f87171;font-size:13px;height:16px;margin-top:8px}
+#gate{position:fixed;inset:0;background:var(--bg);z-index:10;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;text-align:center;padding:20px}
+#gate h2{font-size:18px;color:var(--txt2);font-weight:500}
+#gate p{font-size:13px;color:var(--txt2);max-width:340px}
 .app{display:flex;height:100vh}
 .sidebar{width:380px;min-width:300px;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column}
 .sbhead{padding:14px 16px;background:var(--panel2);display:flex;align-items:center;gap:10px}
@@ -46,11 +43,7 @@ body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;backgr
 </style>
 </head>
 <body>
-<div id="gate"><div class="box">
-  <h2>🔒 Conversas Yalla</h2><p>Acesso restrito. Informe a senha.</p>
-  <input type="password" id="pw" placeholder="Senha" autocomplete="off">
-  <button onclick="tryLogin()">Entrar</button><div class="err" id="err"></div>
-</div></div>
+<div id="gate"><h2>🔒 Acesso restrito</h2><p id="gatemsg">Esta página requer um link de acesso válido.</p></div>
 <div class="app" id="app" style="display:none">
   <div class="sidebar" id="sidebar">
     <div class="sbhead"><h1>💬 Conversas Yalla</h1><span class="count" id="count">…</span></div>
@@ -63,43 +56,52 @@ body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;backgr
   </div>
 </div>
 <script>
-const SENHA="Yalla@2027";
-function tryLogin(){const v=document.getElementById('pw').value;
-  if(v===SENHA){sessionStorage.setItem('ok','1');document.getElementById('gate').style.display='none';document.getElementById('app').style.display='flex';boot();}
-  else{document.getElementById('err').textContent='Senha incorreta';}}
-document.getElementById('pw').addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin()});
-if(sessionStorage.getItem('ok')==='1'){document.getElementById('gate').style.display='none';document.getElementById('app').style.display='flex';window.addEventListener('DOMContentLoaded',boot);}
-
-let INDEX=[],filtered=[],activeId=null,booted=false,shardCache={};
+const CHAVE="Er858uSLh1IG";
+const hash=location.hash.replace(/^#/,'');
+if(hash!==CHAVE){
+  // acesso negado: não carrega nada
+} else {
+  document.getElementById('gate').style.display='none';
+  document.getElementById('app').style.display='flex';
+  window.addEventListener('DOMContentLoaded',start);
+  if(document.readyState!=='loading')start();
+}
+let INDEX=[],MSGS={},filtered=[],activeId=null,started=false;
 let listEl,qEl,msgsEl,headEl,countEl,sidebar;
-function boot(){if(booted)return;booted=true;
+async function start(){
+  if(started)return;started=true;
   listEl=document.getElementById('list');qEl=document.getElementById('q');msgsEl=document.getElementById('msgs');
   headEl=document.getElementById('chathead');countEl=document.getElementById('count');sidebar=document.getElementById('sidebar');
-  fetch('index.json').then(r=>r.json()).then(d=>{INDEX=d;filtered=d;countEl.textContent=d.length.toLocaleString('pt-BR')+' contatos';render();})
-    .catch(e=>{listEl.innerHTML='<div style="padding:20px;color:#f88">Erro ao carregar index.json<br><small>'+e+'</small></div>'});
-  qEl.oninput=()=>{const t=qEl.value.toLowerCase().trim();
-    filtered=t?INDEX.filter(c=>c.nome.toLowerCase().includes(t)||(c.tel||'').includes(t)):INDEX;render();};}
+  try{
+    const resp=await fetch('dados.gzdata');
+    const buf=await resp.arrayBuffer();
+    const ds=new DecompressionStream('gzip');
+    const stream=new Response(buf).body.pipeThrough(ds);
+    const text=await new Response(stream).text();
+    const payload=JSON.parse(text);
+    INDEX=payload.index;MSGS=payload.msgs;filtered=INDEX;
+    countEl.textContent=INDEX.length.toLocaleString('pt-BR')+' contatos';
+    render();
+    qEl.oninput=()=>{const t=qEl.value.toLowerCase().trim();
+      filtered=t?INDEX.filter(c=>c.nome.toLowerCase().includes(t)||(c.tel||'').includes(t)):INDEX;render();};
+  }catch(e){listEl.innerHTML='<div style="padding:20px;color:#f88">Erro ao carregar dados<br><small>'+e+'</small></div>';}
+}
 function render(){const slice=filtered.slice(0,300);
-  listEl.innerHTML=slice.map(c=>`<div class="item ${c.id===activeId?'active':''}" onclick="open_('${c.id}',${c.s})">
+  listEl.innerHTML=slice.map(c=>`<div class="item ${c.id===activeId?'active':''}" onclick="open_('${c.id}')">
     <div class="top"><span class="nome">${esc(c.nome)}</span><span class="data">${c.ult}</span></div>
     <div class="prev">${esc(c.prev)}</div><div class="meta">${c.tel?fmtTel(c.tel):''} · ${c.n} msgs</div></div>`).join('')
     ||'<div style="padding:20px;color:#8696a0">Nada encontrado</div>';
   if(filtered.length>300)listEl.innerHTML+='<div style="padding:14px;text-align:center;color:#8696a0;font-size:12px">Mostrando 300 de '+filtered.length.toLocaleString('pt-BR')+'. Refine a busca.</div>';}
-async function getShard(s){if(shardCache[s])return shardCache[s];
-  const r=await fetch('data/shard'+s+'.json');const d=await r.json();shardCache[s]=d;return d;}
-async function open_(id,s){activeId=id;render();
+function open_(id){activeId=id;render();
   if(window.innerWidth<=720)sidebar.classList.add('hide');
-  const c=INDEX.find(x=>x.id===id);
+  const c=INDEX.find(x=>x.id===id);const ms=MSGS[id]||[];
   headEl.innerHTML=`<span class="nome"><button class="back" onclick="sidebar.classList.remove('hide')">‹</button>${esc(c.nome)}</span><span class="sub">${c.tel?fmtTel(c.tel):'sem telefone'} · ${c.n} mensagens</span>`;
-  msgsEl.innerHTML='<div class="loader">Carregando conversa…</div>';
-  try{const shard=await getShard(s);const ms=shard[id]||[];
-    msgsEl.innerHTML=ms.map(m=>{const t=m.t;
-      if(m.d==='o'&&(t.includes('Atendimento iniciado')||t.includes('Atendimento finalizado')||t.startsWith('>:')))
-        return `<div class="sys">${esc(t.replace('>:','').trim())}</div>`;
-      const cls=m.d==='c'?'customer':'operator';
-      return `<div class="bubble ${cls}">${m.a?`<div class="at">${esc(m.a)}</div>`:''}${esc(t)}<div class="ts">${m.ts}</div></div>`;
-    }).join('');msgsEl.scrollTop=0;
-  }catch(e){msgsEl.innerHTML='<div class="empty">Erro ao carregar conversa</div>';}}
+  msgsEl.innerHTML=ms.map(m=>{const t=m.t;
+    if(m.d==='o'&&(t.includes('Atendimento iniciado')||t.includes('Atendimento finalizado')||t.startsWith('>:')))
+      return `<div class="sys">${esc(t.replace('>:','').trim())}</div>`;
+    const cls=m.d==='c'?'customer':'operator';
+    return `<div class="bubble ${cls}">${m.a?`<div class="at">${esc(m.a)}</div>`:''}${esc(t)}<div class="ts">${m.ts}</div></div>`;
+  }).join('');msgsEl.scrollTop=0;}
 function esc(s){return(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 function fmtTel(t){t=(t||'').replace(/\D/g,'');if(t.length===13)return `+${t.slice(0,2)} (${t.slice(2,4)}) ${t.slice(4,9)}-${t.slice(9)}`;return t}
 </script>
