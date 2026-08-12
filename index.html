@@ -39,7 +39,6 @@ body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;backgr
 .bubble.operator{align-self:flex-end;background:var(--out);border-top-right-radius:2px}
 .bubble .at{font-size:12px;font-weight:600;color:var(--accent);margin-bottom:2px}
 .bubble .ts{font-size:10px;color:#b9c7de;text-align:right;margin-top:3px}
-.sys{align-self:center;background:#0f1b2d;color:var(--txt2);font-size:12px;padding:5px 12px;border-radius:6px;margin:4px 0}
 .loader{margin:auto;color:var(--txt2)}
 .back{display:none;background:none;border:none;color:#fff;font-size:22px;cursor:pointer;margin-right:6px}
 @media(max-width:720px){.sidebar{width:100%;position:absolute;z-index:2;height:100%}.sidebar.hide{display:none}.chat{width:100%}.back{display:inline-block}}
@@ -49,7 +48,7 @@ body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;backgr
 <div id="gate">
   <img src="data:image/png;base64,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" alt="Yalla">
   <h2>🔒 Acesso restrito</h2>
-  <p id="gatemsg">Esta página requer um link de acesso válido.</p>
+  <p>Esta página requer um link de acesso válido.</p>
 </div>
 <div class="app" id="app" style="display:none">
   <div class="sidebar" id="sidebar">
@@ -63,51 +62,77 @@ body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;backgr
   </div>
 </div>
 <script>
+const SB_URL="https://penyfjmgfeqvgzhuffmr.supabase.co";
+const SB_KEY="sb_publishable_3RTDTAgrgJvLNexNXEgfVg_mcu-cKqO";
 const CHAVE="HxXzyDCb8RVp";
+
 const hash=location.hash.replace(/^#/,'');
-if(hash!==CHAVE){
-} else {
+if(hash!==CHAVE){/* acesso negado */}
+else{
   document.getElementById('gate').style.display='none';
   document.getElementById('app').style.display='flex';
   window.addEventListener('DOMContentLoaded',start);
   if(document.readyState!=='loading')start();
 }
-let INDEX=[],MSGS={},filtered=[],activeId=null,started=false;
-let listEl,qEl,msgsEl,headEl,countEl,sidebar;
+
+let listEl,qEl,msgsEl,headEl,countEl,sidebar,activeId=null,buscaTimer=null;
+
+function api(path){
+  return fetch(SB_URL+"/rest/v1/"+path,{headers:{apikey:SB_KEY,Authorization:"Bearer "+SB_KEY}});
+}
+
 async function start(){
-  if(started)return;started=true;
   listEl=document.getElementById('list');qEl=document.getElementById('q');msgsEl=document.getElementById('msgs');
   headEl=document.getElementById('chathead');countEl=document.getElementById('count');sidebar=document.getElementById('sidebar');
   try{
-    const resp=await fetch('dados.gzdata');
-    const buf=await resp.arrayBuffer();
-    const ds=new DecompressionStream('gzip');
-    const stream=new Response(buf).body.pipeThrough(ds);
-    const text=await new Response(stream).text();
-    const payload=JSON.parse(text);
-    INDEX=payload.index;MSGS=payload.msgs;filtered=INDEX;
-    countEl.textContent=INDEX.length.toLocaleString('pt-BR')+' contatos';
-    render();
-    qEl.oninput=()=>{const t=qEl.value.toLowerCase().trim();
-      filtered=t?INDEX.filter(c=>c.nome.toLowerCase().includes(t)||(c.tel||'').includes(t)):INDEX;render();};
-  }catch(e){listEl.innerHTML='<div style="padding:20px;color:#f88">Erro ao carregar dados<br><small>'+e+'</small></div>';}
+    const r=await api("contatos?select=id&limit=1");
+    const cr=r.headers.get("content-range");
+    const total=cr&&cr.includes("/")?cr.split("/")[1]:"?";
+    countEl.textContent=(parseInt(total)||0).toLocaleString('pt-BR')+" contatos";
+  }catch(e){}
+  carregar("");
+  qEl.oninput=()=>{clearTimeout(buscaTimer);buscaTimer=setTimeout(()=>carregar(qEl.value.trim()),350);};
 }
-function render(){const slice=filtered.slice(0,300);
-  listEl.innerHTML=slice.map(c=>`<div class="item ${c.id===activeId?'active':''}" onclick="open_('${c.id}')">
-    <div class="top"><span class="nome">${esc(c.nome)}</span><span class="data">${c.ult}</span></div>
-    <div class="prev">${esc(c.prev)}</div><div class="meta">${c.tel?fmtTel(c.tel):''} · ${c.n} msgs</div></div>`).join('')
-    ||'<div style="padding:20px;color:#8696a0">Nada encontrado</div>';
-  if(filtered.length>300)listEl.innerHTML+='<div style="padding:14px;text-align:center;color:#8696a0;font-size:12px">Mostrando 300 de '+filtered.length.toLocaleString('pt-BR')+'. Refine a busca.</div>';}
-function open_(id){activeId=id;render();
+
+async function carregar(termo){
+  listEl.innerHTML='<div class="loader" style="padding:20px">Carregando…</div>';
+  let path="contatos?select=id,nome,tel,n_msgs,ultima_data,preview&order=ultima_data.desc&limit=200";
+  if(termo){
+    const t=encodeURIComponent("%"+termo+"%");
+    path="contatos?select=id,nome,tel,n_msgs,ultima_data,preview&or=(nome.ilike."+t+",tel.ilike."+t+")&order=ultima_data.desc&limit=200";
+  }
+  try{
+    const r=await api(path); const dados=await r.json();
+    if(!dados.length){listEl.innerHTML='<div style="padding:20px;color:#8696a0">Nada encontrado</div>';return;}
+    listEl.innerHTML=dados.map(c=>`<div class="item ${c.id===activeId?'active':''}" onclick="abrir('${c.id}')">
+      <div class="top"><span class="nome">${esc(c.nome)}</span><span class="data">${c.ultima_data||''}</span></div>
+      <div class="prev">${esc(c.preview||'')}</div>
+      <div class="meta">${c.tel?fmtTel(c.tel):''} · ${c.n_msgs} msgs</div></div>`).join('');
+  }catch(e){listEl.innerHTML='<div style="padding:20px;color:#f88">Erro ao carregar<br><small>'+e+'</small></div>';}
+}
+
+async function abrir(id){
+  activeId=id;
+  document.querySelectorAll('.item').forEach(el=>el.classList.remove('active'));
   if(window.innerWidth<=720)sidebar.classList.add('hide');
-  const c=INDEX.find(x=>x.id===id);const ms=MSGS[id]||[];
-  headEl.innerHTML=`<span class="nome"><button class="back" onclick="sidebar.classList.remove('hide')">‹</button>${esc(c.nome)}</span><span class="sub">${c.tel?fmtTel(c.tel):'sem telefone'} · ${c.n} mensagens</span>`;
-  msgsEl.innerHTML=ms.map(m=>{const t=m.t;
-    if(m.d==='o'&&(t.includes('Atendimento iniciado')||t.includes('Atendimento finalizado')||t.startsWith('>:')))
-      return `<div class="sys">${esc(t.replace('>:','').trim())}</div>`;
-    const cls=m.d==='c'?'customer':'operator';
-    return `<div class="bubble ${cls}">${m.a?`<div class="at">${esc(m.a)}</div>`:''}${esc(t)}<div class="ts">${m.ts}</div></div>`;
-  }).join('');msgsEl.scrollTop=0;}
+  msgsEl.innerHTML='<div class="loader">Carregando conversa…</div>';
+  try{
+    const rc=await api("contatos?select=nome,tel,n_msgs&id=eq."+encodeURIComponent(id));
+    const c=(await rc.json())[0]||{};
+    headEl.innerHTML=`<span class="nome"><button class="back" onclick="document.getElementById('sidebar').classList.remove('hide')">‹</button>${esc(c.nome||'')}</span><span class="sub">${c.tel?fmtTel(c.tel):'sem telefone'} · ${c.n_msgs||0} mensagens</span>`;
+    const rm=await api("mensagens?select=de,conteudo,data_hora,atendente&contato_id=eq."+encodeURIComponent(id)+"&order=data_hora.asc&limit=5000");
+    const ms=await rm.json();
+    msgsEl.innerHTML=ms.map(m=>{
+      const t=m.conteudo||'';
+      if((m.de==='operator')&&(t.includes('Atendimento iniciado')||t.includes('Atendimento finalizado')))
+        return `<div class="empty" style="margin:4px auto;font-size:12px;background:#0f1b2d;padding:5px 12px;border-radius:6px">${esc(t)}</div>`;
+      const cls=m.de==='customer'?'customer':'operator';
+      return `<div class="bubble ${cls}">${m.atendente?`<div class="at">${esc(m.atendente)}</div>`:''}${esc(t)}<div class="ts">${(m.data_hora||'').slice(0,16)}</div></div>`;
+    }).join('');
+    msgsEl.scrollTop=0;
+  }catch(e){msgsEl.innerHTML='<div class="empty">Erro ao carregar conversa</div>';}
+}
+
 function esc(s){return(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 function fmtTel(t){t=(t||'').replace(/\D/g,'');if(t.length===13)return `+${t.slice(0,2)} (${t.slice(2,4)}) ${t.slice(4,9)}-${t.slice(9)}`;return t}
 </script>
