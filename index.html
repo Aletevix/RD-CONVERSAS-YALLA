@@ -89,9 +89,19 @@ async function start(){
   try{
     const r=await api("contatos?select=id&limit=1",{Prefer:"count=exact"});
     const cr=r.headers.get("content-range");
-    const total=cr&&cr.includes("/")?cr.split("/")[1]:null;
-    countEl.textContent=total?parseInt(total).toLocaleString('pt-BR')+" contatos":"— contatos";
-  }catch(e){countEl.textContent="— contatos";}
+    const totC=cr&&cr.includes("/")?parseInt(cr.split("/")[1]):null;
+    let txt=totC?totC.toLocaleString('pt-BR')+" contatos":"— contatos";
+    try{
+      const rm=await api("mensagens?select=id&limit=1",{Prefer:"count=exact"});
+      const crm=rm.headers.get("content-range");
+      const totM=crm&&crm.includes("/")?parseInt(crm.split("/")[1]):null;
+      if(totM){
+        const mm=totM>=1000000?(totM/1000000).toFixed(1).replace('.',',')+"M":totM.toLocaleString('pt-BR');
+        txt+=" · "+mm+" msgs";
+      }
+    }catch(e){}
+    countEl.textContent=txt;
+  }catch(e){}
   carregar("");
   qEl.oninput=()=>{clearTimeout(buscaTimer);buscaTimer=setTimeout(()=>carregar(qEl.value.trim()),350);};
 }
