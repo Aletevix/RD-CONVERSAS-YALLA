@@ -77,19 +77,21 @@ else{
 
 let listEl,qEl,msgsEl,headEl,countEl,sidebar,activeId=null,buscaTimer=null;
 
-function api(path){
-  return fetch(SB_URL+"/rest/v1/"+path,{headers:{apikey:SB_KEY,Authorization:"Bearer "+SB_KEY}});
+function api(path,extra){
+  const h={apikey:SB_KEY,Authorization:"Bearer "+SB_KEY};
+  if(extra)Object.assign(h,extra);
+  return fetch(SB_URL+"/rest/v1/"+path,{headers:h});
 }
 
 async function start(){
   listEl=document.getElementById('list');qEl=document.getElementById('q');msgsEl=document.getElementById('msgs');
   headEl=document.getElementById('chathead');countEl=document.getElementById('count');sidebar=document.getElementById('sidebar');
   try{
-    const r=await api("contatos?select=id&limit=1");
+    const r=await api("contatos?select=id&limit=1",{Prefer:"count=exact"});
     const cr=r.headers.get("content-range");
-    const total=cr&&cr.includes("/")?cr.split("/")[1]:"?";
-    countEl.textContent=(parseInt(total)||0).toLocaleString('pt-BR')+" contatos";
-  }catch(e){}
+    const total=cr&&cr.includes("/")?cr.split("/")[1]:null;
+    countEl.textContent=total?parseInt(total).toLocaleString('pt-BR')+" contatos":"— contatos";
+  }catch(e){countEl.textContent="— contatos";}
   carregar("");
   qEl.oninput=()=>{clearTimeout(buscaTimer);buscaTimer=setTimeout(()=>carregar(qEl.value.trim()),350);};
 }
