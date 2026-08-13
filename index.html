@@ -178,12 +178,8 @@ async function abrir(id){
   try{
     const rc=await api("contatos?select=nome,tel,n_msgs&id=eq."+encodeURIComponent(id));
     const c=(await rc.json())[0]||{};
-    const aviso=(fIni||fFim)?` <span style="color:#FFC21B">· filtrado por período</span>`:'';
-    headEl.innerHTML=`<span class="nome"><button class="back" onclick="document.getElementById('sidebar').classList.remove('hide')">‹</button>${esc(c.nome||'')}</span><span class="sub">${c.tel?fmtTel(c.tel):'sem telefone'} · ${c.n_msgs||0} mensagens${aviso}</span>`;
-    let mpath="mensagens?select=de,conteudo,data_hora,atendente&contato_id=eq."+encodeURIComponent(id)+"&order=data_hora.asc&limit=5000";
-    if(fIni)mpath+="&data_hora=gte."+encodeURIComponent(fIni);
-    if(fFim)mpath+="&data_hora=lte."+encodeURIComponent(fFim);
-    const rm=await api(mpath);
+    headEl.innerHTML=`<span class="nome"><button class="back" onclick="document.getElementById('sidebar').classList.remove('hide')">‹</button>${esc(c.nome||'')}</span><span class="sub">${c.tel?fmtTel(c.tel):'sem telefone'} · ${c.n_msgs||0} mensagens</span>`;
+    const rm=await api("mensagens?select=de,conteudo,data_hora,atendente&contato_id=eq."+encodeURIComponent(id)+"&order=data_hora.asc&limit=5000");
     const ms=await rm.json();
     msgsEl.innerHTML=ms.map(m=>{
       const t=m.conteudo||'';
@@ -206,7 +202,6 @@ function aplicarFiltro(){
   fFim=f?f.replace('T',' ')+":59":null;
   document.querySelectorAll('#atalhos button').forEach(b=>b.classList.remove('on'));
   carregar(qEl.value.trim());
-  if(activeId)abrir(activeId);
 }
 function limparFiltro(){
   fIni=fFim=null;
@@ -214,7 +209,6 @@ function limparFiltro(){
   document.querySelectorAll('#atalhos button').forEach(b=>b.classList.remove('on'));
   document.querySelector('#atalhos button[data-d="-1"]').classList.add('on');
   carregar(qEl.value.trim());
-  if(activeId)abrir(activeId);
 }
 function atalho(dias,btn){
   document.querySelectorAll('#atalhos button').forEach(b=>b.classList.remove('on'));
@@ -230,7 +224,6 @@ function atalho(dias,btn){
     document.getElementById('dtFim').value=toLocal(fim);
   }
   carregar(qEl.value.trim());
-  if(activeId)abrir(activeId);
 }
 function esc(s){return(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 function fmtTel(t){t=(t||'').replace(/\D/g,'');if(t.length===13)return `+${t.slice(0,2)} (${t.slice(2,4)}) ${t.slice(4,9)}-${t.slice(9)}`;return t}
