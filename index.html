@@ -39,6 +39,18 @@ body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;backgr
 .bubble.operator{align-self:flex-end;background:var(--out);border-top-right-radius:2px}
 .bubble .at{font-size:12px;font-weight:600;color:var(--accent);margin-bottom:2px}
 .bubble .ts{font-size:10px;color:#b9c7de;text-align:right;margin-top:3px}
+.filtros{padding:6px 12px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:6px}
+.filtros .atalhos{display:flex;gap:4px;flex-wrap:wrap}
+.filtros .atalhos button{flex:1;min-width:44px;padding:5px 6px;border:none;border-radius:6px;background:var(--panel2);color:var(--txt2);font-size:11px;cursor:pointer}
+.filtros .atalhos button:hover,.filtros .atalhos button.on{background:var(--accent);color:#002A69;font-weight:600}
+.filtros .datas{display:flex;gap:5px;align-items:center}
+.filtros .datas input{flex:1;min-width:0;padding:5px 7px;border:none;border-radius:6px;background:var(--panel2);color:var(--txt);font-size:11px;outline:none;color-scheme:dark}
+.filtros .datas span{font-size:11px;color:var(--txt2)}
+.filtros .aplicar{display:flex;gap:5px}
+.filtros .aplicar button{flex:1;padding:6px;border:none;border-radius:6px;font-size:12px;cursor:pointer}
+.filtros .aplicar .go{background:var(--accent);color:#002A69;font-weight:600}
+.filtros .aplicar .clr{background:var(--in);color:var(--txt2)}
+.msgfiltro{text-align:center;font-size:11px;color:var(--accent);padding:4px;background:rgba(255,194,27,.08)}
 .loader{margin:auto;color:var(--txt2)}
 .back{display:none;background:none;border:none;color:#fff;font-size:22px;cursor:pointer;margin-right:6px}
 @media(max-width:720px){.sidebar{width:100%;position:absolute;z-index:2;height:100%}.sidebar.hide{display:none}.chat{width:100%}.back{display:inline-block}}
@@ -54,6 +66,24 @@ body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;backgr
   <div class="sidebar" id="sidebar">
     <div class="sbhead"><img src="data:image/png;base64,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" alt="Yalla"><span class="count" id="count">…</span></div>
     <div class="search"><input id="q" placeholder="Buscar por nome ou telefone…" autocomplete="off"></div>
+    <div class="filtros">
+      <div class="atalhos" id="atalhos">
+        <button data-d="0">Hoje</button>
+        <button data-d="7">7 dias</button>
+        <button data-d="30">30 dias</button>
+        <button data-d="90">90 dias</button>
+        <button data-d="-1" class="on">Tudo</button>
+      </div>
+      <div class="datas">
+        <input type="datetime-local" id="dtIni" title="Início">
+        <span>→</span>
+        <input type="datetime-local" id="dtFim" title="Fim">
+      </div>
+      <div class="aplicar">
+        <button class="go" onclick="aplicarFiltro()">Filtrar</button>
+        <button class="clr" onclick="limparFiltro()">Limpar</button>
+      </div>
+    </div>
     <div class="list" id="list"><div class="loader" style="padding:20px">Carregando…</div></div>
   </div>
   <div class="chat">
@@ -76,6 +106,7 @@ else{
 }
 
 let listEl,qEl,msgsEl,headEl,countEl,sidebar,activeId=null,buscaTimer=null;
+let fIni=null,fFim=null;  // filtro de periodo (texto "YYYY-MM-DD HH:MM:SS")
 
 function api(path,extra){
   const h={apikey:SB_KEY,Authorization:"Bearer "+SB_KEY};
@@ -86,6 +117,7 @@ function api(path,extra){
 async function start(){
   listEl=document.getElementById('list');qEl=document.getElementById('q');msgsEl=document.getElementById('msgs');
   headEl=document.getElementById('chathead');countEl=document.getElementById('count');sidebar=document.getElementById('sidebar');
+  // contar total
   try{
     const r=await api("contatos?select=id&limit=1",{Prefer:"count=exact"});
     const cr=r.headers.get("content-range");
@@ -104,16 +136,31 @@ async function start(){
   }catch(e){}
   carregar("");
   qEl.oninput=()=>{clearTimeout(buscaTimer);buscaTimer=setTimeout(()=>carregar(qEl.value.trim()),350);};
+  document.querySelectorAll('#atalhos button').forEach(b=>{b.onclick=()=>atalho(parseInt(b.dataset.d),b);});
 }
 
 async function carregar(termo){
   listEl.innerHTML='<div class="loader" style="padding:20px">Carregando…</div>';
-  let path="contatos?select=id,nome,tel,n_msgs,ultima_data,preview&order=ultima_data.desc&limit=200";
-  if(termo){
-    const t=encodeURIComponent("%"+termo+"%");
-    path="contatos?select=id,nome,tel,n_msgs,ultima_data,preview&or=(nome.ilike."+t+",tel.ilike."+t+")&order=ultima_data.desc&limit=200";
-  }
   try{
+    let ids=null;
+    // Se há filtro de período, primeiro descobre quais contatos têm mensagem no período
+    if(fIni||fFim){
+      let mp="mensagens?select=contato_id&limit=100000";
+      if(fIni)mp+="&data_hora=gte."+encodeURIComponent(fIni);
+      if(fFim)mp+="&data_hora=lte."+encodeURIComponent(fFim);
+      const rm=await api(mp); const mm=await rm.json();
+      ids=[...new Set(mm.map(x=>x.contato_id))];
+      if(!ids.length){listEl.innerHTML='<div style="padding:20px;color:#8696a0">Nenhuma conversa nesse período</div>';return;}
+    }
+    let path="contatos?select=id,nome,tel,n_msgs,ultima_data,preview&order=ultima_data.desc&limit=300";
+    const filtros=[];
+    if(termo){const t=encodeURIComponent("%"+termo+"%");filtros.push("or=(nome.ilike."+t+",tel.ilike."+t+")");}
+    if(ids){
+      // limitar a lista de ids (Supabase aceita in.(...))
+      const lista=ids.slice(0,1000).map(x=>'"'+x+'"').join(",");
+      filtros.push("id=in.("+lista+")");
+    }
+    if(filtros.length)path+="&"+filtros.join("&");
     const r=await api(path); const dados=await r.json();
     if(!dados.length){listEl.innerHTML='<div style="padding:20px;color:#8696a0">Nada encontrado</div>';return;}
     listEl.innerHTML=dados.map(c=>`<div class="item ${c.id===activeId?'active':''}" onclick="abrir('${c.id}')">
@@ -131,8 +178,12 @@ async function abrir(id){
   try{
     const rc=await api("contatos?select=nome,tel,n_msgs&id=eq."+encodeURIComponent(id));
     const c=(await rc.json())[0]||{};
-    headEl.innerHTML=`<span class="nome"><button class="back" onclick="document.getElementById('sidebar').classList.remove('hide')">‹</button>${esc(c.nome||'')}</span><span class="sub">${c.tel?fmtTel(c.tel):'sem telefone'} · ${c.n_msgs||0} mensagens</span>`;
-    const rm=await api("mensagens?select=de,conteudo,data_hora,atendente&contato_id=eq."+encodeURIComponent(id)+"&order=data_hora.asc&limit=5000");
+    const aviso=(fIni||fFim)?` <span style="color:#FFC21B">· filtrado por período</span>`:'';
+    headEl.innerHTML=`<span class="nome"><button class="back" onclick="document.getElementById('sidebar').classList.remove('hide')">‹</button>${esc(c.nome||'')}</span><span class="sub">${c.tel?fmtTel(c.tel):'sem telefone'} · ${c.n_msgs||0} mensagens${aviso}</span>`;
+    let mpath="mensagens?select=de,conteudo,data_hora,atendente&contato_id=eq."+encodeURIComponent(id)+"&order=data_hora.asc&limit=5000";
+    if(fIni)mpath+="&data_hora=gte."+encodeURIComponent(fIni);
+    if(fFim)mpath+="&data_hora=lte."+encodeURIComponent(fFim);
+    const rm=await api(mpath);
     const ms=await rm.json();
     msgsEl.innerHTML=ms.map(m=>{
       const t=m.conteudo||'';
@@ -145,6 +196,42 @@ async function abrir(id){
   }catch(e){msgsEl.innerHTML='<div class="empty">Erro ao carregar conversa</div>';}
 }
 
+function fmtDT(d){ // Date -> "YYYY-MM-DD HH:MM:SS"
+  const p=n=>String(n).padStart(2,'0');
+  return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds());
+}
+function aplicarFiltro(){
+  const i=document.getElementById('dtIni').value, f=document.getElementById('dtFim').value;
+  fIni=i?i.replace('T',' ')+":00":null;
+  fFim=f?f.replace('T',' ')+":59":null;
+  document.querySelectorAll('#atalhos button').forEach(b=>b.classList.remove('on'));
+  carregar(qEl.value.trim());
+  if(activeId)abrir(activeId);
+}
+function limparFiltro(){
+  fIni=fFim=null;
+  document.getElementById('dtIni').value='';document.getElementById('dtFim').value='';
+  document.querySelectorAll('#atalhos button').forEach(b=>b.classList.remove('on'));
+  document.querySelector('#atalhos button[data-d="-1"]').classList.add('on');
+  carregar(qEl.value.trim());
+  if(activeId)abrir(activeId);
+}
+function atalho(dias,btn){
+  document.querySelectorAll('#atalhos button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  if(dias<0){fIni=fFim=null;document.getElementById('dtIni').value='';document.getElementById('dtFim').value='';}
+  else{
+    const fim=new Date(); const ini=new Date();
+    if(dias===0){ini.setHours(0,0,0,0);}
+    else{ini.setDate(ini.getDate()-dias);ini.setHours(0,0,0,0);}
+    fIni=fmtDT(ini); fFim=fmtDT(fim);
+    const toLocal=d=>{const p=n=>String(n).padStart(2,'0');return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+"T"+p(d.getHours())+":"+p(d.getMinutes());};
+    document.getElementById('dtIni').value=toLocal(ini);
+    document.getElementById('dtFim').value=toLocal(fim);
+  }
+  carregar(qEl.value.trim());
+  if(activeId)abrir(activeId);
+}
 function esc(s){return(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 function fmtTel(t){t=(t||'').replace(/\D/g,'');if(t.length===13)return `+${t.slice(0,2)} (${t.slice(2,4)}) ${t.slice(4,9)}-${t.slice(9)}`;return t}
 </script>
