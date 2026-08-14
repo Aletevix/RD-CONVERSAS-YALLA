@@ -198,7 +198,7 @@ async function abrir(id){
       const cls=m.de==='customer'?'customer':'operator';
       return `<div class="bubble ${cls}">${m.atendente?`<div class="at">${esc(m.atendente)}</div>`:''}${esc(t)}<div class="ts">${fmtDataHora(m.data_hora)}</div></div>`;
     }).join('');
-    msgsEl.scrollTop=0;
+    msgsEl.scrollTop=msgsEl.scrollHeight;
   }catch(e){msgsEl.innerHTML='<div class="empty">Erro ao carregar conversa</div>';}
 }
 
