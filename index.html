@@ -5,19 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>Conversas · Yalla</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--bg:#0b141a;--panel:#0f1b2d;--panel2:#002A69;--in:#1a2942;--out:#0a5c4b;--txt:#e9edef;--txt2:#8fa3bf;--accent:#FFC21B;--navy:#002A69;--border:#1c3050;}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--txt);height:100vh;overflow:hidden}
-#gate{position:fixed;inset:0;background:linear-gradient(135deg,#002A69,#001a40);z-index:10;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;text-align:center;padding:20px}
-#gate img{width:150px;height:auto;margin-bottom:6px;border-radius:6px}
-#gate h2{font-size:18px;color:#fff;font-weight:600}
-#gate p{font-size:13px;color:#b9c7de;max-width:340px}
+#login{position:fixed;inset:0;background:linear-gradient(135deg,#002A69,#001a40);z-index:20;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;padding:20px}
+#login img{width:150px;height:auto;margin-bottom:10px;border-radius:6px}
+#login .box{background:rgba(255,255,255,.06);padding:26px;border-radius:14px;width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px}
+#login h2{font-size:17px;color:#fff;text-align:center;font-weight:600}
+#login input{padding:11px 14px;border-radius:8px;border:none;background:rgba(255,255,255,.12);color:#fff;font-size:14px;outline:none}
+#login input::placeholder{color:#b9c7de}
+#login button{padding:11px;border-radius:8px;border:none;background:var(--accent);color:#002A69;font-weight:700;font-size:14px;cursor:pointer}
+#login button:disabled{opacity:.6;cursor:default}
+#login .erro{color:#ff8a8a;font-size:13px;text-align:center;min-height:16px}
 .app{display:flex;height:100vh}
 .sidebar{width:380px;min-width:300px;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column}
 .sbhead{padding:12px 16px;background:var(--navy);display:flex;align-items:center;gap:10px}
 .sbhead img{height:34px;width:auto;border-radius:4px}
 .sbhead .count{font-size:12px;color:#b9c7de;margin-left:auto}
+.sbhead .sair{background:rgba(255,255,255,.12);border:none;color:#fff;font-size:11px;padding:5px 9px;border-radius:6px;cursor:pointer;margin-left:8px}
 .search{padding:8px 12px;background:var(--panel)}
 .search input{width:100%;padding:9px 14px;border-radius:8px;border:none;background:var(--panel2);color:var(--txt);font-size:14px;outline:none}
 .search input::placeholder{color:#8fa3bf}
@@ -50,21 +57,25 @@ body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;backgr
 .filtros .aplicar button{flex:1;padding:6px;border:none;border-radius:6px;font-size:12px;cursor:pointer}
 .filtros .aplicar .go{background:var(--accent);color:#002A69;font-weight:600}
 .filtros .aplicar .clr{background:var(--in);color:var(--txt2)}
-.msgfiltro{text-align:center;font-size:11px;color:var(--accent);padding:4px;background:rgba(255,194,27,.08)}
 .loader{margin:auto;color:var(--txt2)}
 .back{display:none;background:none;border:none;color:#fff;font-size:22px;cursor:pointer;margin-right:6px}
 @media(max-width:720px){.sidebar{width:100%;position:absolute;z-index:2;height:100%}.sidebar.hide{display:none}.chat{width:100%}.back{display:inline-block}}
 </style>
 </head>
 <body>
-<div id="gate">
-  <img src="data:image/png;base64,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" alt="Yalla">
-  <h2>🔒 Acesso restrito</h2>
-  <p>Esta página requer um link de acesso válido.</p>
+<div id="login">
+  <img src="data:image/png;base64,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" alt="Yalla">
+  <div class="box">
+    <h2>Histórico de Conversas</h2>
+    <input type="email" id="email" placeholder="E-mail" autocomplete="username">
+    <input type="password" id="senha" placeholder="Senha" autocomplete="current-password">
+    <button id="btnLogin">Entrar</button>
+    <div class="erro" id="erroLogin"></div>
+  </div>
 </div>
 <div class="app" id="app" style="display:none">
   <div class="sidebar" id="sidebar">
-    <div class="sbhead"><img src="data:image/png;base64,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" alt="Yalla"><span class="count" id="count">…</span></div>
+    <div class="sbhead"><img src="data:image/png;base64,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" alt="Yalla"><span class="count" id="count">…</span><button class="sair" id="btnSair">Sair</button></div>
     <div class="search"><input id="q" placeholder="Buscar por nome ou telefone…" autocomplete="off"></div>
     <div class="filtros">
       <div class="atalhos" id="atalhos">
@@ -93,45 +104,52 @@ body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;backgr
 </div>
 <script>
 const SB_URL="https://penyfjmgfeqvgzhuffmr.supabase.co";
-const SB_KEY="sb_publishable_3RTDTAgrgJvLNexNXEgfVg_mcu-cKqO";
-const CHAVE="HxXzyDCb8RVp";
-
-const hash=location.hash.replace(/^#/,'');
-if(hash!==CHAVE){/* acesso negado */}
-else{
-  document.getElementById('gate').style.display='none';
-  document.getElementById('app').style.display='flex';
-  window.addEventListener('DOMContentLoaded',start);
-  if(document.readyState!=='loading')start();
-}
+const SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBlbnlmam1nZmVxdmd6aHVmZm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1NDgyMTYsImV4cCI6MjEwMjEyNDIxNn0.bd5eg0U44vzJ5duPk77rqAsCkQPI3niJLI_PKQYi9SY";
+const sb=supabase.createClient(SB_URL,SB_KEY);
 
 let listEl,qEl,msgsEl,headEl,countEl,sidebar,activeId=null,buscaTimer=null;
-let fIni=null,fFim=null;  // filtro de periodo (texto "YYYY-MM-DD HH:MM:SS")
+let fIni=null,fFim=null;
 
-function api(path,extra){
-  const h={apikey:SB_KEY,Authorization:"Bearer "+SB_KEY};
-  if(extra)Object.assign(h,extra);
-  return fetch(SB_URL+"/rest/v1/"+path,{headers:h});
+// ---------- LOGIN ----------
+async function checarSessao(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(session){entrarApp(session);}
 }
+document.getElementById('btnLogin').onclick=fazerLogin;
+document.getElementById('senha').addEventListener('keydown',e=>{if(e.key==='Enter')fazerLogin();});
+async function fazerLogin(){
+  const email=document.getElementById('email').value.trim();
+  const senha=document.getElementById('senha').value;
+  const erro=document.getElementById('erroLogin');
+  const btn=document.getElementById('btnLogin');
+  erro.textContent=''; btn.disabled=true; btn.textContent='Entrando…';
+  const {data,error}=await sb.auth.signInWithPassword({email,password:senha});
+  btn.disabled=false; btn.textContent='Entrar';
+  if(error){erro.textContent='E-mail ou senha inválidos';return;}
+  entrarApp(data.session);
+}
+async function entrarApp(session){
+  document.getElementById('login').style.display='none';
+  document.getElementById('app').style.display='flex';
+  // registrar acesso
+  try{
+    await sb.from('acessos').insert({user_id:session.user.id,email:session.user.email});
+  }catch(e){}
+  start();
+}
+document.getElementById('btnSair').onclick=async()=>{
+  await sb.auth.signOut(); location.reload();
+};
 
+// ---------- APP ----------
 async function start(){
   listEl=document.getElementById('list');qEl=document.getElementById('q');msgsEl=document.getElementById('msgs');
   headEl=document.getElementById('chathead');countEl=document.getElementById('count');sidebar=document.getElementById('sidebar');
-  // contar total
   try{
-    const r=await api("contatos?select=id&limit=1",{Prefer:"count=exact"});
-    const cr=r.headers.get("content-range");
-    const totC=cr&&cr.includes("/")?parseInt(cr.split("/")[1]):null;
+    const {count:totC}=await sb.from('contatos').select('id',{count:'exact',head:true});
     let txt=totC?totC.toLocaleString('pt-BR')+" contatos":"— contatos";
-    try{
-      const rm=await api("mensagens?select=id&limit=1",{Prefer:"count=exact"});
-      const crm=rm.headers.get("content-range");
-      const totM=crm&&crm.includes("/")?parseInt(crm.split("/")[1]):null;
-      if(totM){
-        const mm=totM>=1000000?(totM/1000000).toFixed(1).replace('.',',')+"M":totM.toLocaleString('pt-BR');
-        txt+=" · "+mm+" msgs";
-      }
-    }catch(e){}
+    const {count:totM}=await sb.from('mensagens').select('id',{count:'exact',head:true});
+    if(totM){const mm=totM>=1000000?(totM/1000000).toFixed(1).replace('.',',')+"M":totM.toLocaleString('pt-BR');txt+=" · "+mm+" msgs";}
     countEl.textContent=txt;
   }catch(e){}
   carregar("");
@@ -143,31 +161,24 @@ async function carregar(termo){
   listEl.innerHTML='<div class="loader" style="padding:20px">Carregando…</div>';
   try{
     let ids=null;
-    // Se há filtro de período, primeiro descobre quais contatos têm mensagem no período
     if(fIni||fFim){
-      let mp="mensagens?select=contato_id&limit=100000";
-      if(fIni)mp+="&data_hora=gte."+encodeURIComponent(fIni);
-      if(fFim)mp+="&data_hora=lte."+encodeURIComponent(fFim);
-      const rm=await api(mp); const mm=await rm.json();
-      ids=[...new Set(mm.map(x=>x.contato_id))];
+      let q=sb.from('mensagens').select('contato_id').limit(100000);
+      if(fIni)q=q.gte('data_hora',fIni);
+      if(fFim)q=q.lte('data_hora',fFim);
+      const {data:mm}=await q;
+      ids=[...new Set((mm||[]).map(x=>x.contato_id))];
       if(!ids.length){listEl.innerHTML='<div style="padding:20px;color:#8696a0">Nenhuma conversa nesse período</div>';return;}
     }
-    let path="contatos?select=id,nome,tel,n_msgs,ultima_data,preview&order=ultima_data.desc&limit=300";
-    const filtros=[];
-    if(termo){const t=encodeURIComponent("%"+termo+"%");filtros.push("or=(nome.ilike."+t+",tel.ilike."+t+")");}
-    if(ids){
-      // limitar a lista de ids (Supabase aceita in.(...))
-      const lista=ids.slice(0,1000).map(x=>'"'+x+'"').join(",");
-      filtros.push("id=in.("+lista+")");
-    }
-    if(filtros.length)path+="&"+filtros.join("&");
-    const r=await api(path); const dados=await r.json();
-    if(!dados.length){listEl.innerHTML='<div style="padding:20px;color:#8696a0">Nada encontrado</div>';return;}
+    let q=sb.from('contatos').select('id,nome,tel,n_msgs,ultima_data,preview').order('ultima_data',{ascending:false}).limit(300);
+    if(termo)q=q.or(`nome.ilike.%${termo}%,tel.ilike.%${termo}%`);
+    if(ids)q=q.in('id',ids.slice(0,1000));
+    const {data:dados}=await q;
+    if(!dados||!dados.length){listEl.innerHTML='<div style="padding:20px;color:#8696a0">Nada encontrado</div>';return;}
     listEl.innerHTML=dados.map(c=>`<div class="item ${c.id===activeId?'active':''}" onclick="abrir('${c.id}')">
       <div class="top"><span class="nome">${esc(c.nome)}</span><span class="data">${fmtData(c.ultima_data)}</span></div>
       <div class="prev">${esc(c.preview||'')}</div>
       <div class="meta">${c.tel?fmtTel(c.tel):''} · ${c.n_msgs} msgs</div></div>`).join('');
-  }catch(e){listEl.innerHTML='<div style="padding:20px;color:#f88">Erro ao carregar<br><small>'+e+'</small></div>';}
+  }catch(e){listEl.innerHTML='<div style="padding:20px;color:#f88">Erro ao carregar</div>';}
 }
 
 async function abrir(id){
@@ -176,12 +187,11 @@ async function abrir(id){
   if(window.innerWidth<=720)sidebar.classList.add('hide');
   msgsEl.innerHTML='<div class="loader">Carregando conversa…</div>';
   try{
-    const rc=await api("contatos?select=nome,tel,n_msgs&id=eq."+encodeURIComponent(id));
-    const c=(await rc.json())[0]||{};
+    const {data:cs}=await sb.from('contatos').select('nome,tel,n_msgs').eq('id',id);
+    const c=(cs&&cs[0])||{};
     headEl.innerHTML=`<span class="nome"><button class="back" onclick="document.getElementById('sidebar').classList.remove('hide')">‹</button>${esc(c.nome||'')}</span><span class="sub">${c.tel?fmtTel(c.tel):'sem telefone'} · ${c.n_msgs||0} mensagens</span>`;
-    const rm=await api("mensagens?select=de,conteudo,data_hora,atendente&contato_id=eq."+encodeURIComponent(id)+"&order=data_hora.asc&limit=5000");
-    const ms=await rm.json();
-    msgsEl.innerHTML=ms.map(m=>{
+    const {data:ms}=await sb.from('mensagens').select('de,conteudo,data_hora,atendente').eq('contato_id',id).order('data_hora',{ascending:true}).limit(5000);
+    msgsEl.innerHTML=(ms||[]).map(m=>{
       const t=m.conteudo||'';
       if((m.de==='operator')&&(t.includes('Atendimento iniciado')||t.includes('Atendimento finalizado')))
         return `<div class="empty" style="margin:4px auto;font-size:12px;background:#0f1b2d;padding:5px 12px;border-radius:6px">${esc(t)}</div>`;
@@ -192,54 +202,37 @@ async function abrir(id){
   }catch(e){msgsEl.innerHTML='<div class="empty">Erro ao carregar conversa</div>';}
 }
 
-function fmtDT(d){ // Date -> "YYYY-MM-DD HH:MM:SS"
-  const p=n=>String(n).padStart(2,'0');
-  return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds());
-}
+function fmtDT(d){const p=n=>String(n).padStart(2,'0');return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds());}
 function aplicarFiltro(){
-  const i=document.getElementById('dtIni').value, f=document.getElementById('dtFim').value;
-  fIni=i?i.replace('T',' ')+":00":null;
-  fFim=f?f.replace('T',' ')+":59":null;
+  const i=document.getElementById('dtIni').value,f=document.getElementById('dtFim').value;
+  fIni=i?i.replace('T',' ')+":00":null;fFim=f?f.replace('T',' ')+":59":null;
   document.querySelectorAll('#atalhos button').forEach(b=>b.classList.remove('on'));
   carregar(qEl.value.trim());
 }
 function limparFiltro(){
-  fIni=fFim=null;
-  document.getElementById('dtIni').value='';document.getElementById('dtFim').value='';
+  fIni=fFim=null;document.getElementById('dtIni').value='';document.getElementById('dtFim').value='';
   document.querySelectorAll('#atalhos button').forEach(b=>b.classList.remove('on'));
   document.querySelector('#atalhos button[data-d="-1"]').classList.add('on');
   carregar(qEl.value.trim());
 }
 function atalho(dias,btn){
-  document.querySelectorAll('#atalhos button').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
+  document.querySelectorAll('#atalhos button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
   if(dias<0){fIni=fFim=null;document.getElementById('dtIni').value='';document.getElementById('dtFim').value='';}
   else{
-    const fim=new Date(); const ini=new Date();
-    if(dias===0){ini.setHours(0,0,0,0);}
-    else{ini.setDate(ini.getDate()-dias);ini.setHours(0,0,0,0);}
-    fIni=fmtDT(ini); fFim=fmtDT(fim);
+    const fim=new Date();const ini=new Date();
+    if(dias===0){ini.setHours(0,0,0,0);}else{ini.setDate(ini.getDate()-dias);ini.setHours(0,0,0,0);}
+    fIni=fmtDT(ini);fFim=fmtDT(fim);
     const toLocal=d=>{const p=n=>String(n).padStart(2,'0');return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+"T"+p(d.getHours())+":"+p(d.getMinutes());};
-    document.getElementById('dtIni').value=toLocal(ini);
-    document.getElementById('dtFim').value=toLocal(fim);
+    document.getElementById('dtIni').value=toLocal(ini);document.getElementById('dtFim').value=toLocal(fim);
   }
   carregar(qEl.value.trim());
 }
-function fmtData(s){ // "2026-08-13" -> "13/08/2026"
-  if(!s)return'';
-  const p=String(s).slice(0,10).split('-');
-  return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:s;
-}
-function fmtDataHora(s){ // "2026-08-13 14:30" -> "13/08/2026 14:30"
-  if(!s)return'';
-  const str=String(s);
-  const d=str.slice(0,10).split('-');
-  const hora=str.slice(11,16);
-  if(d.length!==3)return str;
-  return `${d[2]}/${d[1]}/${d[0]}${hora?' '+hora:''}`;
-}
+function fmtData(s){if(!s)return'';const p=String(s).slice(0,10).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:s;}
+function fmtDataHora(s){if(!s)return'';const str=String(s);const d=str.slice(0,10).split('-');const hora=str.slice(11,16);if(d.length!==3)return str;return `${d[2]}/${d[1]}/${d[0]}${hora?' '+hora:''}`;}
 function esc(s){return(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 function fmtTel(t){t=(t||'').replace(/\D/g,'');if(t.length===13)return `+${t.slice(0,2)} (${t.slice(2,4)}) ${t.slice(4,9)}-${t.slice(9)}`;return t}
+
+checarSessao();
 </script>
 </body>
 </html>
